@@ -1,0 +1,8 @@
+*~
+*.swp
+cabal.sandbox.config
+.cabal-sandbox/
+dist/
+state/
+tor_data/
+hidden_service/
