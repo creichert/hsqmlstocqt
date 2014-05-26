@@ -53,11 +53,11 @@ Rectangle {
     property var settings
 
     function update() {
-        if (settings.chartType === "year")
+        if (stockSettings.chartType === "year")
             chart.startDate = new Date(chart.endDate.getFullYear() - 1, chart.endDate.getMonth(), chart.endDate.getDate());
-        else if (settings.chartType === "month")
+        else if (stockSettings.chartType === "month")
             chart.startDate = new Date(chart.endDate.getFullYear() , chart.endDate.getMonth() -1, chart.endDate.getDate());
-        else if (settings.chartType === "week")
+        else if (stockSettings.chartType === "week")
             chart.startDate = new Date(chart.endDate.getFullYear() , chart.endDate.getMonth(), chart.endDate.getDate() - 7);
         else
             chart.startDate = new Date(1995, 3, 25);

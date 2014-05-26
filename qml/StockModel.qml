@@ -42,7 +42,6 @@ import QtQuick 2.0
 
 ListModel {
     id: model
-    property string stockId: ""
     property string stockName: ""
     property var startDate
     property var endDate
@@ -73,7 +72,7 @@ ListModel {
     }
 
     function requestUrl() {
-        if (stockId === "")
+        if (stockModel.stockId === "")
             return;
 
         if (startDate === undefined)
@@ -93,7 +92,7 @@ ListModel {
                 g:data cycle(d daily,  w weekly, m monthly, v Dividend)
           */
         var request = "http://ichart.finance.yahoo.com/table.csv?";
-        request += "s=" + stockId;
+        request += "s=" + stockModel.stockId;
         request += "&a=" + startDate.getDate();
         request += "&b=" + startDate.getMonth();
         request += "&c=" + startDate.getFullYear();

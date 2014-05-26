@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
+import Control.Concurrent
 import Graphics.QML
 
 import GUI.StocQt
@@ -8,9 +9,15 @@ import GUI.StocQt
 main :: IO ()
 main = do
 
-    sc <- newObjectDC $ StocQt
+    y   <- newMVar "year"
+    sid <- newMVar ""
 
-    -- doc <- getDataFileName "qml/HSTorChat.qml"
+    sis <- mapM newObjectDC $ genStockList stocks
+
+    sm  <- newObjectDC $ StockModel sid
+    ss  <- newObjectDC $ StockSettings y
+    sc  <- newObjectDC $ StocQt sm sis ss
+
     runEngineLoop defaultEngineConfig {
       initialDocument = fileDocument "qml/stocqt.qml"
     , contextObject   = Just $ anyObjRef sc

@@ -59,11 +59,9 @@ ListView {
 
     StockModel {
         id: stock
-        stockId: listView.currentStockId
         stockName: listView.currentStockName
         startDate: settings.startDate
         endDate: settings.endDate
-        onStockIdChanged: updateTimer.restart()
         onStartDateChanged: updateTimer.restart()
         onEndDateChanged: updateTimer.restart()
         onDataReady: {
@@ -101,7 +99,16 @@ ListView {
             onDrawClosePriceChanged: stockView.update()
             onDrawVolumeChanged: stockView.update()
             onDrawKLineChanged: stockView.update()
-            onChartTypeChanged: stockView.update()
         }
+    }
+
+    Connections {
+        target: stockModel
+        onStockIdChanged: updateTimer.restart()
+    }
+
+    Connections {
+        target: stockSettings
+        onChartTypeChanged: stockView.update()
     }
 }

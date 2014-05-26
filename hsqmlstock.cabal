@@ -1,6 +1,6 @@
 name:                hsqmlstock
 version:             0.1.0.0
-synopsis:            Example Stock Market App Using QML
+synopsis:            Stock Market Visualization in Haskell and Qt Quick
 copyright:           (c) 2014 Christopher Reichert
 license:             GPL-3
 license-file:        LICENSE
@@ -11,7 +11,7 @@ cabal-version:       >=1.10
 category:            Graphics
 stability:           experimental
 data-files:          qml/*.qml, qml/img/*.png
-description:         blah
+description:         Haskell HsQML version of StocQt Qt Quick example.
 
 executable hsqmlstock
   main-is:             Main.hs

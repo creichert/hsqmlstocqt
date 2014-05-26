@@ -46,7 +46,6 @@ Rectangle {
     height: 480
     color: "#423A2F"
 
-    property string currentStockId: ""
     property string currentStockName: ""
 
     ListView {
@@ -55,12 +54,12 @@ Rectangle {
         keyNavigationWraps: true
         focus: true
         snapMode: ListView.SnapToItem
-        model: StockListModel{}
+        model: stockListModel
 
         onCurrentIndexChanged: {
-            root.currentStockId = model.get(currentIndex).stockId;
-            root.currentStockName = model.get(currentIndex).name;
-            console.log("current stock:" + root.currentStockId + " - " + root.currentStockName);
+            stockModel.stockId = model[currentIndex].stockId;
+            root.currentStockName = model[currentIndex].name;
+            console.log("current stock:" + stockModel.stockId + " - " + root.currentStockName);
         }
 
         delegate: Rectangle {
@@ -78,7 +77,7 @@ Rectangle {
                 color: index == view.currentIndex ? "#ECC089" : "#A58963"
                 font.pointSize: 12
                 font.bold: true
-                text:"         " + stockId + " - " + name
+                text:"         " + modelData.stockId + " - " + modelData.name
             }
         }
 

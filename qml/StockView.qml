@@ -95,7 +95,7 @@ Rectangle {
             anchors.topMargin: 40
             color: "#564c3A"
             font.pointSize: 15
-            text: root.stock.stockId + " - " + root.stock.stockName
+            text: stockModel.stockId + " - " + root.stock.stockName
         }
 
         Text {

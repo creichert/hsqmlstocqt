@@ -48,6 +48,7 @@ Rectangle {
     property var startDate : startDatePicker.date
     property var endDate : endDatePicker.date
 
+    // Instead of binding these we can just use their respective sig handlers.
     property bool drawHighPrice: highButton.buttonEnabled
     property bool drawLowPrice: lowButton.buttonEnabled
     property bool drawOpenPrice: openButton.buttonEnabled
@@ -60,8 +61,6 @@ Rectangle {
     property color openColor: Qt.rgba(0, 0, 1, 1)
     property color volumeColor: Qt.rgba(0.3, 0.5, 0.7, 1)
     property color closeColor: "#ecc088"
-
-    property string chartType: "year"
 
     Image {
         id: logo
@@ -189,26 +188,26 @@ Rectangle {
         Button {
             id: yearView
             text: "YEAR"
-            buttonEnabled: root.chartType == "year"
-            onClicked: root.chartType = "year"
+            buttonEnabled: stockSettings.chartType == "year"
+            onClicked: stockSettings.chartType = "year"
         }
         Button {
             id: monthView
             text: "MONTH"
-            buttonEnabled: root.chartType == "month"
-            onClicked: root.chartType = "month"
+            buttonEnabled: stockSettings.chartType == "month"
+            onClicked: stockSettings.chartType = "month"
         }
         Button {
             id: weekView
             text: "WEEK"
-            buttonEnabled: root.chartType == "week"
-            onClicked: root.chartType = "week"
+            buttonEnabled: stockSettings.chartType == "week"
+            onClicked: stockSettings.chartType = "week"
         }
         Button {
             id: allView
             text: "ALL"
-            buttonEnabled: root.chartType == "all"
-            onClicked: root.chartType = "all"
+            buttonEnabled: stockSettings.chartType == "all"
+            onClicked: stockSettings.chartType = "all"
         }
     }
 
