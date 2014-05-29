@@ -246,17 +246,17 @@ Rectangle {
                                 volume:price.volume
                             });
             }
-            if (settings.drawHighPrice)
-                drawPrice(ctx, first, last, settings.highColor,"high", points, highestPrice);
-            if (settings.drawLowPrice)
-                drawPrice(ctx, first, last, settings.lowColor,"low", points, highestPrice);
-            if (settings.drawOpenPrice)
-                drawPrice(ctx, first, last,settings.openColor,"open", points, highestPrice);
-            if (settings.drawClosePrice)
+            if (stockSettings.drawHighPrice)
+                drawPrice(ctx, first, last, stockSettings.highColor,"high", points, highestPrice);
+            if (stockSettings.drawLowPrice)
+                drawPrice(ctx, first, last, stockSettings.lowColor,"low", points, highestPrice);
+            if (stockSettings.drawOpenPrice)
+                drawPrice(ctx, first, last,stockSettings.openColor,"open", points, highestPrice);
+            if (stockSettings.drawClosePrice)
                 drawPrice(ctx, first, last, stockSettings.closeColor,"close", points, highestPrice);
-            if (settings.drawVolume)
-                drawVolume(ctx, first, last, settings.volumeColor,"volume", points, highestVolume);
-            if (settings.drawKLine)
+            if (stockSettings.drawVolume)
+                drawVolume(ctx, first, last, stockSettings.volumeColor,"volume", points, highestVolume);
+            if (stockSettings.drawKLine)
                 drawKLine(ctx, first, last, points, highestPrice);
         }
     }

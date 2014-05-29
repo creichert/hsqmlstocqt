@@ -48,18 +48,6 @@ Rectangle {
     property var startDate : startDatePicker.date
     property var endDate : endDatePicker.date
 
-    property bool drawHighPrice: highButton.buttonEnabled
-    property bool drawLowPrice: lowButton.buttonEnabled
-    property bool drawOpenPrice: openButton.buttonEnabled
-    property bool drawClosePrice: closeButton.buttonEnabled
-    property bool drawVolume: volumeButton.buttonEnabled
-    property bool drawKLine: klineButton.buttonEnabled
-
-    property color highColor: Qt.rgba(1, 0, 0, 1)
-    property color lowColor: Qt.rgba(0, 1, 0, 1)
-    property color openColor: Qt.rgba(0, 0, 1, 1)
-    property color volumeColor: Qt.rgba(0.3, 0.5, 0.7, 1)
-
     Image {
         id: logo
         source: "images/logo.png"
@@ -131,11 +119,13 @@ Rectangle {
                 id: highButton
                 text: "High"
                 buttonEnabled: false
+                onButtonEnabledChanged: stockSettings.drawHighPrice = highButton.buttonEnabled
             }
             CheckBox {
                 id: lowButton
                 text: "Low"
                 buttonEnabled: false
+                onButtonEnabledChanged: stockSettings.drawLowPrice = lowButton.buttonEnabled
             }
         }
         Row {
@@ -144,13 +134,14 @@ Rectangle {
                 id: openButton
                 text: "Open"
                 buttonEnabled: false
+                onButtonEnabledChanged: stockSettings.drawOpenPrice = openButton.buttonEnabled
             }
             CheckBox {
                 text: "Close"
                 id: closeButton
                 buttonEnabled: true
+                onButtonEnabledChanged: stockSettings.drawClosePrice = closeButton.buttonEnabled
             }
-
         }
         Row {
             spacing: 10
@@ -158,11 +149,13 @@ Rectangle {
                 id: volumeButton
                 text: "Volume"
                 buttonEnabled: true
+                onButtonEnabledChanged: stockSettings.drawVolume = volumeButton.buttonEnabled
             }
             CheckBox {
                 id: klineButton
                 text: "K Line"
                 buttonEnabled: false
+                onButtonEnabledChanged: stockSettings.drawKLine = klineButton.buttonEnabled
             }
         }
     }

@@ -12,19 +12,30 @@ data StocQt = StocQt { stockModel     :: ObjRef StockModel
                      , stockSettings  :: ObjRef StockSettings
                      } deriving Typeable
 
-data StockModel = StockModel { stockId        :: MVar T.Text
-                             , stockName      :: MVar T.Text
+data StockModel = StockModel { stockId :: MVar T.Text
+                             , stockName :: MVar T.Text
                              , stockDataCycle :: MVar T.Text
-                             , ready          :: MVar Bool
-                             , stockPrice     :: MVar Double
+                             , ready :: MVar Bool
+                             , stockPrice :: MVar Double
                              , stockPriceDelta :: MVar Double
-                             , highestPrice   :: MVar Double
-                             , highestVolume  :: MVar Double
+                             , highestPrice :: MVar Double
+                             , highestVolume :: MVar Double
                              } deriving Typeable
 
 type ChartType = T.Text
-data StockSettings = StockSettings { chartType :: MVar ChartType
-                                   , closeColor :: MVar T.Text
+type Color = T.Text -- RGB in Hex.
+data StockSettings = StockSettings { chartType   :: MVar ChartType
+                                   , drawHighPrice :: MVar Bool
+                                   , drawLowPrice :: MVar Bool
+                                   , drawOpenPrice :: MVar Bool
+                                   , drawClosePrice :: MVar Bool
+                                   , drawVolume :: MVar Bool
+                                   , drawKLine :: MVar Bool
+                                   , closeColor :: MVar Color
+                                   , highColor :: MVar Color
+                                   , lowColor :: MVar Color
+                                   , openColor :: MVar Color
+                                   , volumeColor :: MVar Color
                                    } deriving Typeable
 
 data StockListItem = StockListItem { name        :: T.Text
@@ -41,7 +52,12 @@ data StockPriceDeltaChanged deriving Typeable
 data HighestPriceChanged deriving Typeable
 data HighestVolumeChanged deriving Typeable
 data ChartTypeChanged deriving Typeable
-data CloseColorChanged deriving Typeable
+data DrawHighPriceChanged deriving Typeable
+data DrawLowPriceChanged deriving Typeable
+data DrawOpenPriceChanged deriving Typeable
+data DrawClosePriceChanged deriving Typeable
+data DrawVolumeChanged deriving Typeable
+data DrawKLineChanged deriving Typeable
 
 instance DefaultClass StocQt where
     classMembers = [
@@ -87,11 +103,31 @@ instance DefaultClass StockSettings where
     classMembers = [
               defPropertySigRW "chartType" chartTypeChanged
                         (getProperty chartType) $ setProperty chartType chartTypeChanged
-            , defPropertySigRW "closeColor" closeColorChanged
-                        (getProperty closeColor) $ setProperty closeColor closeColorChanged
+            , defPropertySigRW "drawHighPrice" drawHighPriceChanged
+                        (getProperty drawHighPrice) $ setProperty drawHighPrice drawHighPriceChanged
+            , defPropertySigRW "drawLowPrice" drawLowPriceChanged
+                        (getProperty drawLowPrice) $ setProperty drawLowPrice drawLowPriceChanged
+            , defPropertySigRW "drawOpenPrice" drawOpenPriceChanged
+                        (getProperty drawOpenPrice) $ setProperty drawOpenPrice drawOpenPriceChanged
+            , defPropertySigRW "drawClosePrice" drawClosePriceChanged
+                        (getProperty drawClosePrice) $ setProperty drawClosePrice drawClosePriceChanged
+            , defPropertySigRW "drawVolume" drawVolumeChanged
+                        (getProperty drawVolume) $ setProperty drawVolume drawVolumeChanged
+            , defPropertySigRW "drawKLine" drawKLineChanged
+                        (getProperty drawKLine) $ setProperty drawKLine drawKLineChanged
+            , defPropertyRO "closeColor" $ getProperty closeColor
+            , defPropertyRO "highColor" $ getProperty highColor
+            , defPropertyRO "lowColor" $ getProperty lowColor
+            , defPropertyRO "openColor" $ getProperty openColor
+            , defPropertyRO "volumeColor" $ getProperty volumeColor
             ]
       where chartTypeChanged = Proxy :: Proxy ChartTypeChanged
-            closeColorChanged = Proxy :: Proxy CloseColorChanged
+            drawHighPriceChanged = Proxy :: Proxy DrawHighPriceChanged
+            drawLowPriceChanged = Proxy :: Proxy DrawLowPriceChanged
+            drawOpenPriceChanged = Proxy :: Proxy DrawOpenPriceChanged
+            drawClosePriceChanged = Proxy :: Proxy DrawClosePriceChanged
+            drawVolumeChanged = Proxy :: Proxy DrawVolumeChanged
+            drawKLineChanged = Proxy :: Proxy DrawKLineChanged
 
 instance SignalKeyClass StockIdChanged where
     type SignalParams StockIdChanged = IO ()
@@ -120,8 +156,23 @@ instance SignalKeyClass ReadyChanged where
 instance SignalKeyClass ChartTypeChanged where
     type SignalParams ChartTypeChanged = IO ()
 
-instance SignalKeyClass CloseColorChanged where
-    type SignalParams CloseColorChanged = IO ()
+instance SignalKeyClass DrawHighPriceChanged where
+    type SignalParams DrawHighPriceChanged = IO ()
+
+instance SignalKeyClass DrawLowPriceChanged where
+    type SignalParams DrawLowPriceChanged = IO ()
+
+instance SignalKeyClass DrawOpenPriceChanged where
+    type SignalParams DrawOpenPriceChanged = IO ()
+
+instance SignalKeyClass DrawClosePriceChanged where
+    type SignalParams DrawClosePriceChanged = IO ()
+
+instance SignalKeyClass DrawVolumeChanged where
+    type SignalParams DrawVolumeChanged = IO ()
+
+instance SignalKeyClass DrawKLineChanged where
+    type SignalParams DrawKLineChanged = IO ()
 
 getProperty :: (tt -> MVar a) -> ObjRef tt -> IO a
 getProperty gtr = readMVar . gtr . fromObjRef

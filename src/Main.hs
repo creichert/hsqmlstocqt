@@ -20,13 +20,23 @@ main = do
     hv  <- newMVar 0.0 -- highestVolume
 
     -- StockSettings
-    ct <- newMVar "year" -- chartType
+    ct  <- newMVar "year" -- chartType
+    dhp <- newMVar False -- drawHighPrice
+    dlp <- newMVar False -- drawLowPrice
+    dop <- newMVar False -- drawOpenPrice
+    dcp <- newMVar True -- drawClosePrice
+    dv  <- newMVar True -- drawVolume
+    dkl <- newMVar False -- drawKLine
     cc <- newMVar "#ecc088" -- closeColor
+    hc <- newMVar "#ff0000" -- highColor
+    lc <- newMVar "#00ff00" -- lowColor
+    oc <- newMVar "#0000ff" -- openColor
+    vc <- newMVar "#0000ff" -- volumeColor
 
     sis <- mapM newObjectDC $ genStockList stocks
 
     sm  <- newObjectDC $ StockModel sid sn sdc r sp m hp hv
-    ss  <- newObjectDC $ StockSettings ct cc
+    ss  <- newObjectDC $ StockSettings ct dhp dlp dop dcp dv dkl cc hc lc oc vc
     sc  <- newObjectDC $ StocQt sm sis ss
 
     runEngineLoop defaultEngineConfig {

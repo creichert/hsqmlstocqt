@@ -92,12 +92,6 @@ ListView {
             id: settings
             width: root.width
             height: root.height
-            onDrawHighPriceChanged: stockView.update()
-            onDrawLowPriceChanged: stockView.update()
-            onDrawOpenPriceChanged: stockView.update()
-            onDrawClosePriceChanged: stockView.update()
-            onDrawVolumeChanged: stockView.update()
-            onDrawKLineChanged: stockView.update()
         }
     }
 
@@ -109,5 +103,11 @@ ListView {
     Connections {
         target: stockSettings
         onChartTypeChanged: stockView.update()
+        onDrawHighPriceChanged: stockView.update()
+        onDrawLowPriceChanged: stockView.update()
+        onDrawOpenPriceChanged: stockView.update()
+        onDrawClosePriceChanged: {console.log("CHANGED: " + stockSettings.drawClosePrice); stockView.update()}
+        onDrawVolumeChanged: stockView.update()
+        onDrawKLineChanged: stockView.update()
     }
 }
