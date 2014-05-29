@@ -44,7 +44,6 @@ ListModel {
     id: model
     property var startDate
     property var endDate
-    property string stockDataCycle: "d"
     property bool ready: false
     property real stockPrice: 0.0
     property real stockPriceChanged: 0.0
@@ -80,8 +79,11 @@ ListModel {
         if (endDate === undefined)
             endDate = new Date(); //today
 
-        if (stockDataCycle !== "d" && stockDataCycle !== "w" && stockDataCycle !== "m")
-            stockDataCycle = "d";
+        if (stockModel.stockDataCycle !== "d" &&
+                stockModel.stockDataCycle !== "w" &&
+                stockModel.stockDataCycle !== "m") {
+            stockModel.stockDataCycle = "d";
+        }
 
         /*
             Fetch stock data from yahoo finance:
@@ -98,7 +100,7 @@ ListModel {
         request += "&d=" + endDate.getDate();
         request += "&e=" + endDate.getMonth();
         request += "&f=" + endDate.getFullYear();
-        request += "&g=" + stockDataCycle;
+        request += "&g=" + stockModel.stockDataCycle;
         request += "&ignore=.csv";
         return request;
     }

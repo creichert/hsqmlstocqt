@@ -9,13 +9,14 @@ import GUI.StocQt
 main :: IO ()
 main = do
 
-    y   <- newMVar "year"
-    sid <- newMVar ""
-    sn  <- newMVar ""
+    y   <- newMVar "year" -- year
+    sid <- newMVar "" -- stockId
+    sn  <- newMVar "" -- stockName
+    sdc <- newMVar "d" -- stockDataCycle
 
     sis <- mapM newObjectDC $ genStockList stocks
 
-    sm  <- newObjectDC $ StockModel sid sn
+    sm  <- newObjectDC $ StockModel sid sn sdc
     ss  <- newObjectDC $ StockSettings y
     sc  <- newObjectDC $ StocQt sm sis ss
 
