@@ -1,4 +1,4 @@
-name:                hsqmlstock
+name:                hsqmlstocqt
 version:             0.1.0.0
 synopsis:            Stock Market Visualization in Haskell and Qt Quick
 copyright:           (c) 2014 Christopher Reichert
@@ -13,7 +13,7 @@ stability:           experimental
 data-files:          qml/*.qml, qml/img/*.png
 description:         Haskell HsQML version of StocQt Qt Quick example.
 
-executable hsqmlstock
+executable hsqmlstocqt
   main-is:             Main.hs
   hs-source-dirs:      src/
   ghc-options:         -Wall -threaded -fno-warn-unused-do-bind
