@@ -59,7 +59,6 @@ ListView {
 
     StockModel {
         id: stock
-        stockName: listView.currentStockName
         startDate: settings.startDate
         endDate: settings.endDate
         onStartDateChanged: updateTimer.restart()

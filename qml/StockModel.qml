@@ -42,7 +42,6 @@ import QtQuick 2.0
 
 ListModel {
     id: model
-    property string stockName: ""
     property var startDate
     property var endDate
     property string stockDataCycle: "d"

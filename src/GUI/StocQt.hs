@@ -12,7 +12,8 @@ data StocQt = StocQt { stockModel     :: ObjRef StockModel
                      , stockSettings  :: ObjRef StockSettings
                      } deriving Typeable
 
-data StockModel = StockModel { stockId :: MVar T.Text
+data StockModel = StockModel { stockId   :: MVar T.Text
+                             , stockName :: MVar T.Text
                              } deriving Typeable
 
 type ChartType = T.Text
@@ -24,8 +25,9 @@ data StockListItem = StockListItem { name        :: T.Text
                                    } deriving (Show, Typeable)
 
 -- Signals
-data ChartTypeChanged deriving Typeable
 data StockIdChanged deriving Typeable
+data StockNameChanged deriving Typeable
+data ChartTypeChanged deriving Typeable
 
 instance DefaultClass StocQt where
     classMembers = [
@@ -37,6 +39,7 @@ instance DefaultClass StocQt where
 instance DefaultClass StockModel where
     classMembers = [
               defPropertySigRW "stockId" (Proxy :: Proxy StockIdChanged) getStockId setStockId
+            , defPropertySigRW "stockName" (Proxy :: Proxy StockNameChanged) getStockName setStockName
             ]
 
 instance DefaultClass StockListItem where
@@ -53,6 +56,9 @@ instance DefaultClass StockSettings where
 instance SignalKeyClass StockIdChanged where
     type SignalParams StockIdChanged = IO ()
 
+instance SignalKeyClass StockNameChanged where
+    type SignalParams StockNameChanged = IO ()
+
 instance SignalKeyClass ChartTypeChanged where
     type SignalParams ChartTypeChanged = IO ()
 
@@ -62,6 +68,13 @@ getStockId = readMVar . stockId . fromObjRef
 setStockId :: ObjRef StockModel -> T.Text -> IO ()
 setStockId sm sid = modifyMVar_ (stockId $ fromObjRef sm) $ \_ ->
         fireSignal (Proxy :: Proxy StockIdChanged) sm >> return sid
+
+getStockName :: ObjRef StockModel -> IO T.Text
+getStockName = readMVar . stockName . fromObjRef
+
+setStockName :: ObjRef StockModel -> T.Text -> IO ()
+setStockName sm sn = modifyMVar_ (stockName $ fromObjRef sm) $ \_ ->
+        fireSignal (Proxy :: Proxy StockNameChanged) sm >> return sn
 
 getChartType :: ObjRef StockSettings -> IO ChartType
 getChartType = readMVar . chartType . fromObjRef

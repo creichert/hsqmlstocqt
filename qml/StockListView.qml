@@ -46,8 +46,6 @@ Rectangle {
     height: 480
     color: "#423A2F"
 
-    property string currentStockName: ""
-
     ListView {
         id: view
         anchors.fill: parent
@@ -58,8 +56,8 @@ Rectangle {
 
         onCurrentIndexChanged: {
             stockModel.stockId = model[currentIndex].stockId;
-            root.currentStockName = model[currentIndex].name;
-            console.log("current stock:" + stockModel.stockId + " - " + root.currentStockName);
+            stockModel.stockName = model[currentIndex].name;
+            console.log("current stock:" + stockModel.stockId + " - " + stockModel.stockName);
         }
 
         delegate: Rectangle {
