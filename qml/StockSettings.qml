@@ -59,7 +59,6 @@ Rectangle {
     property color lowColor: Qt.rgba(0, 1, 0, 1)
     property color openColor: Qt.rgba(0, 0, 1, 1)
     property color volumeColor: Qt.rgba(0.3, 0.5, 0.7, 1)
-    property color closeColor: "#ecc088"
 
     Image {
         id: logo

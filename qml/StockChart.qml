@@ -253,7 +253,7 @@ Rectangle {
             if (settings.drawOpenPrice)
                 drawPrice(ctx, first, last,settings.openColor,"open", points, highestPrice);
             if (settings.drawClosePrice)
-                drawPrice(ctx, first, last, settings.closeColor,"close", points, highestPrice);
+                drawPrice(ctx, first, last, stockSettings.closeColor,"close", points, highestPrice);
             if (settings.drawVolume)
                 drawVolume(ctx, first, last, settings.volumeColor,"volume", points, highestVolume);
             if (settings.drawKLine)

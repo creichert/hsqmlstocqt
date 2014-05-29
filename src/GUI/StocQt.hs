@@ -24,6 +24,7 @@ data StockModel = StockModel { stockId        :: MVar T.Text
 
 type ChartType = T.Text
 data StockSettings = StockSettings { chartType :: MVar ChartType
+                                   , closeColor :: MVar T.Text
                                    } deriving Typeable
 
 data StockListItem = StockListItem { name        :: T.Text
@@ -40,6 +41,7 @@ data StockPriceDeltaChanged deriving Typeable
 data HighestPriceChanged deriving Typeable
 data HighestVolumeChanged deriving Typeable
 data ChartTypeChanged deriving Typeable
+data CloseColorChanged deriving Typeable
 
 instance DefaultClass StocQt where
     classMembers = [
@@ -85,8 +87,11 @@ instance DefaultClass StockSettings where
     classMembers = [
               defPropertySigRW "chartType" chartTypeChanged
                         (getProperty chartType) $ setProperty chartType chartTypeChanged
+            , defPropertySigRW "closeColor" closeColorChanged
+                        (getProperty closeColor) $ setProperty closeColor closeColorChanged
             ]
       where chartTypeChanged = Proxy :: Proxy ChartTypeChanged
+            closeColorChanged = Proxy :: Proxy CloseColorChanged
 
 instance SignalKeyClass StockIdChanged where
     type SignalParams StockIdChanged = IO ()
@@ -114,6 +119,9 @@ instance SignalKeyClass ReadyChanged where
 
 instance SignalKeyClass ChartTypeChanged where
     type SignalParams ChartTypeChanged = IO ()
+
+instance SignalKeyClass CloseColorChanged where
+    type SignalParams CloseColorChanged = IO ()
 
 getProperty :: (tt -> MVar a) -> ObjRef tt -> IO a
 getProperty gtr = readMVar . gtr . fromObjRef
