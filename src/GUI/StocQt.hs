@@ -38,8 +38,8 @@ instance DefaultClass StocQt where
 
 instance DefaultClass StockModel where
     classMembers = [
-              defPropertySigRW "stockId" (Proxy :: Proxy StockIdChanged) getStockId setStockId
-            , defPropertySigRW "stockName" (Proxy :: Proxy StockNameChanged) getStockName setStockName
+              defPropertySigRW "stockId" (Proxy :: Proxy StockIdChanged) (getter stockId) setStockId
+            , defPropertySigRW "stockName" (Proxy :: Proxy StockNameChanged) (getter stockName) setStockName
             ]
 
 instance DefaultClass StockListItem where
@@ -50,7 +50,7 @@ instance DefaultClass StockListItem where
 
 instance DefaultClass StockSettings where
     classMembers = [
-              defPropertySigRW "chartType" (Proxy :: Proxy ChartTypeChanged) getChartType setChartType
+              defPropertySigRW "chartType" (Proxy :: Proxy ChartTypeChanged) (getter chartType) setChartType
             ]
 
 instance SignalKeyClass StockIdChanged where
@@ -62,22 +62,16 @@ instance SignalKeyClass StockNameChanged where
 instance SignalKeyClass ChartTypeChanged where
     type SignalParams ChartTypeChanged = IO ()
 
-getStockId :: ObjRef StockModel -> IO T.Text
-getStockId = readMVar . stockId . fromObjRef
+getter :: (tt -> MVar a) -> ObjRef tt -> IO a
+getter gtr = readMVar . gtr . fromObjRef
 
 setStockId :: ObjRef StockModel -> T.Text -> IO ()
 setStockId sm sid = modifyMVar_ (stockId $ fromObjRef sm) $ \_ ->
         fireSignal (Proxy :: Proxy StockIdChanged) sm >> return sid
 
-getStockName :: ObjRef StockModel -> IO T.Text
-getStockName = readMVar . stockName . fromObjRef
-
 setStockName :: ObjRef StockModel -> T.Text -> IO ()
 setStockName sm sn = modifyMVar_ (stockName $ fromObjRef sm) $ \_ ->
         fireSignal (Proxy :: Proxy StockNameChanged) sm >> return sn
-
-getChartType :: ObjRef StockSettings -> IO ChartType
-getChartType = readMVar . chartType . fromObjRef
 
 setChartType :: ObjRef StockSettings -> ChartType -> IO ()
 setChartType ss ct = modifyMVar_ (chartType $ fromObjRef ss) $ \_ ->
