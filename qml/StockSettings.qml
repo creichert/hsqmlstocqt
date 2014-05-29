@@ -48,7 +48,6 @@ Rectangle {
     property var startDate : startDatePicker.date
     property var endDate : endDatePicker.date
 
-    // Instead of binding these we can just use their respective sig handlers.
     property bool drawHighPrice: highButton.buttonEnabled
     property bool drawLowPrice: lowButton.buttonEnabled
     property bool drawOpenPrice: openButton.buttonEnabled
