@@ -16,10 +16,12 @@ main = do
     r   <- newMVar False -- ready
     sp  <- newMVar 0.0 -- stockPrice
     m   <- newMVar 0.0 -- stockPriceModified
+    hp  <- newMVar 0.0 -- highestPrice
+    hv  <- newMVar 0.0 -- highestVolume
 
     sis <- mapM newObjectDC $ genStockList stocks
 
-    sm  <- newObjectDC $ StockModel sid sn sdc r sp m
+    sm  <- newObjectDC $ StockModel sid sn sdc r sp m hp hv
     ss  <- newObjectDC $ StockSettings y
     sc  <- newObjectDC $ StocQt sm sis ss
 

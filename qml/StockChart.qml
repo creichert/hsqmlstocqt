@@ -231,8 +231,8 @@ Rectangle {
             first = Math.max(first, 0);
             console.log("painting...  first:" + first + ", last:" + last);
 
-            var highestPrice = model.highestPrice;
-            var highestVolume = model.highestVolume;
+            var highestPrice = stockModel.highestPrice;
+            var highestVolume = stockModel.highestVolume;
             console.log("highest price:" + highestPrice + ", highest volume:" + highestVolume)
             var points = [];
             for (var i = 0; i <= last - first; i+=pixelSkip) {

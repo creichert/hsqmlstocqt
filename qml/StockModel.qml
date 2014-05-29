@@ -44,8 +44,6 @@ ListModel {
     id: model
     property var startDate
     property var endDate
-    property real highestPrice: 0
-    property real highestVolume: 0
 
     signal dataReady
 
@@ -103,10 +101,10 @@ ListModel {
     }
 
     function createStockPrice(r) {
-        if (highestPrice < r[2])
-            highestPrice = r[2];
-        if (highestVolume < r[5])
-            highestVolume = r[5];
+        if (stockModel.highestPrice < r[2])
+            stockModel.highestPrice = r[2];
+        if (stockModel.highestVolume < r[5])
+            stockModel.highestVolume = r[5];
         return {
                 "date": r[0],
                 "open":r[1],

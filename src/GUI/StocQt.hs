@@ -18,6 +18,8 @@ data StockModel = StockModel { stockId        :: MVar T.Text
                              , ready          :: MVar Bool
                              , stockPrice     :: MVar Double
                              , stockPriceDelta :: MVar Double
+                             , highestPrice   :: MVar Double
+                             , highestVolume  :: MVar Double
                              } deriving Typeable
 
 type ChartType = T.Text
@@ -35,6 +37,8 @@ data StockDataCycleChanged deriving Typeable
 data ReadyChanged deriving Typeable
 data StockPriceChanged deriving Typeable
 data StockPriceDeltaChanged deriving Typeable
+data HighestPriceChanged deriving Typeable
+data HighestVolumeChanged deriving Typeable
 data ChartTypeChanged deriving Typeable
 
 instance DefaultClass StocQt where
@@ -57,6 +61,10 @@ instance DefaultClass StockModel where
                         (getProperty stockPrice) $ setProperty stockPrice stockPriceChanged 
             , defPropertySigRW "stockPriceDelta" stockPriceDeltaChanged
                         (getProperty stockPriceDelta) $ setProperty stockPriceDelta stockPriceDeltaChanged 
+            , defPropertySigRW "highestPrice" highestPriceChanged
+                        (getProperty highestPrice) $ setProperty highestPrice highestPriceChanged 
+            , defPropertySigRW "highestVolume" highestVolumeChanged
+                        (getProperty highestVolume) $ setProperty highestVolume highestVolumeChanged 
             ]
       where stockIdChanged = Proxy :: Proxy StockIdChanged
             stockNameChanged = Proxy :: Proxy StockNameChanged
@@ -64,6 +72,8 @@ instance DefaultClass StockModel where
             readyChanged = Proxy :: Proxy ReadyChanged
             stockPriceChanged = Proxy :: Proxy StockPriceChanged
             stockPriceDeltaChanged = Proxy :: Proxy StockPriceDeltaChanged
+            highestPriceChanged = Proxy :: Proxy HighestPriceChanged
+            highestVolumeChanged = Proxy :: Proxy HighestVolumeChanged
 
 instance DefaultClass StockListItem where
     classMembers = [
@@ -92,6 +102,12 @@ instance SignalKeyClass StockPriceChanged where
 
 instance SignalKeyClass StockPriceDeltaChanged where
     type SignalParams StockPriceDeltaChanged = IO ()
+
+instance SignalKeyClass HighestPriceChanged where
+    type SignalParams HighestPriceChanged = IO ()
+
+instance SignalKeyClass HighestVolumeChanged where
+    type SignalParams HighestVolumeChanged = IO ()
 
 instance SignalKeyClass ReadyChanged where
     type SignalParams ReadyChanged = IO ()
