@@ -126,7 +126,7 @@ Rectangle {
             anchors.top : priceChange.bottom
             anchors.topMargin: 30
             width: parent.width
-            stockModel: root.stock
+            model: root.stock
             settings: root.settings
         }
     }

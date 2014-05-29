@@ -47,7 +47,7 @@ Rectangle {
     color: "transparent"
 
     property var _months: [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ]
-    property var stockModel: null
+    property var model: null // Temporarily renamed from stockModel while integrating HsQML.
     property var startDate: new Date()
     property var endDate: new Date()
     property var settings
@@ -226,17 +226,17 @@ Rectangle {
             if (!stockModel.ready)
                 return;
 
-            last = stockModel.indexOf(chart.endDate)
+            last = model.indexOf(chart.endDate)
             first = last - (chart.endDate.getTime() - chart.startDate.getTime())/86400000;
             first = Math.max(first, 0);
             console.log("painting...  first:" + first + ", last:" + last);
 
-            var highestPrice = stockModel.highestPrice;
-            var highestVolume = stockModel.highestVolume;
+            var highestPrice = model.highestPrice;
+            var highestVolume = model.highestVolume;
             console.log("highest price:" + highestPrice + ", highest volume:" + highestVolume)
             var points = [];
             for (var i = 0; i <= last - first; i+=pixelSkip) {
-                var price = stockModel.get(i + first);
+                var price = model.get(i + first);
                 points.push({
                                 x: i*canvas.width/(last-first+1),
                                 open: price.open,

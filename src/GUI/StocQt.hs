@@ -15,6 +15,7 @@ data StocQt = StocQt { stockModel     :: ObjRef StockModel
 data StockModel = StockModel { stockId        :: MVar T.Text
                              , stockName      :: MVar T.Text
                              , stockDataCycle :: MVar T.Text
+                             , ready          :: MVar Bool
                              } deriving Typeable
 
 type ChartType = T.Text
@@ -29,6 +30,7 @@ data StockListItem = StockListItem { name        :: T.Text
 data StockIdChanged deriving Typeable
 data StockNameChanged deriving Typeable
 data StockDataCycleChanged deriving Typeable
+data ReadyChanged deriving Typeable
 data ChartTypeChanged deriving Typeable
 
 instance DefaultClass StocQt where
@@ -43,6 +45,7 @@ instance DefaultClass StockModel where
               defPropertySigRW "stockId" (Proxy :: Proxy StockIdChanged) (getter stockId) setStockId
             , defPropertySigRW "stockName" (Proxy :: Proxy StockNameChanged) (getter stockName) setStockName
             , defPropertySigRW "stockDataCycle" (Proxy :: Proxy StockDataCycleChanged) (getter stockDataCycle) setStockDataCycle
+            , defPropertySigRW "ready" (Proxy :: Proxy ReadyChanged) (getter ready) setReady
             ]
 
 instance DefaultClass StockListItem where
@@ -65,6 +68,9 @@ instance SignalKeyClass StockNameChanged where
 instance SignalKeyClass StockDataCycleChanged where
     type SignalParams StockDataCycleChanged = IO ()
 
+instance SignalKeyClass ReadyChanged where
+    type SignalParams ReadyChanged = IO ()
+
 instance SignalKeyClass ChartTypeChanged where
     type SignalParams ChartTypeChanged = IO ()
 
@@ -82,6 +88,10 @@ setStockName sm sn = modifyMVar_ (stockName $ fromObjRef sm) $ \_ ->
 setStockDataCycle :: ObjRef StockModel -> T.Text -> IO ()
 setStockDataCycle sm sdc = modifyMVar_ (stockDataCycle $ fromObjRef sm) $ \_ ->
         fireSignal (Proxy :: Proxy StockDataCycleChanged) sm >> return sdc
+
+setReady :: ObjRef StockModel -> Bool -> IO ()
+setReady sm r = modifyMVar_ (ready $ fromObjRef sm) $ \_ ->
+        fireSignal (Proxy :: Proxy StockDataCycleChanged) sm >> return r
 
 setChartType :: ObjRef StockSettings -> ChartType -> IO ()
 setChartType ss ct = modifyMVar_ (chartType $ fromObjRef ss) $ \_ ->

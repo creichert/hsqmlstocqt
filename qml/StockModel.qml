@@ -44,7 +44,6 @@ ListModel {
     id: model
     property var startDate
     property var endDate
-    property bool ready: false
     property real stockPrice: 0.0
     property real stockPriceChanged: 0.0
     property real highestPrice: 0
@@ -131,7 +130,7 @@ ListModel {
 
         xhr.open("GET", req, true);
 
-        model.ready = false;
+        stockModel.ready = false;
         model.clear();
         var i = 1; //skip the first line
         xhr.onreadystatechange = function() {
@@ -146,7 +145,7 @@ ListModel {
 
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (model.count > 0) {
-                        model.ready = true;
+                        stockModel.ready = true;
                         model.stockPrice = model.get(0).adjusted;
                         model.stockPriceChanged = model.count > 1 ? (Math.round((model.stockPrice - model.get(1).close) * 100) / 100) : 0;
                         model.dataReady(); //emit signal
