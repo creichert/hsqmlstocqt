@@ -106,7 +106,7 @@ ListView {
         onDrawHighPriceChanged: stockView.update()
         onDrawLowPriceChanged: stockView.update()
         onDrawOpenPriceChanged: stockView.update()
-        onDrawClosePriceChanged: {console.log("CHANGED: " + stockSettings.drawClosePrice); stockView.update()}
+        onDrawClosePriceChanged: stockView.update()
         onDrawVolumeChanged: stockView.update()
         onDrawKLineChanged: stockView.update()
     }
