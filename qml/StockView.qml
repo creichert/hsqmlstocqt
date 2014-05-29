@@ -106,7 +106,7 @@ Rectangle {
             anchors.topMargin: 5
             color: "#ECC089"
             font.pointSize: 30
-            text: root.stock.stockPrice
+            text: stockModel.stockPrice
         }
 
         Text {
@@ -115,9 +115,9 @@ Rectangle {
             anchors.leftMargin: 20
             anchors.top: price.bottom
             anchors.topMargin: 5
-            color: root.stock.stockPriceChanged < 0 ? "#A43D3D" : "#679B3A"
+            color: stockModel.stockPriceDelta < 0 ? "#A43D3D" : "#679B3A"
             font.pointSize: 25
-            text: root.stock.stockPriceChanged + " (" + Math.abs(Math.round(root.stock.stockPriceChanged/(root.stock.stockPrice - root.stock.stockPriceChanged) * 100))/100  +"%)"
+            text: stockModel.stockPriceDelta + " (" + Math.abs(Math.round(stockModel.stockPriceDelta/(stockModel.stockPrice - stockModel.stockPriceDelta) * 100))/100  +"%)"
         }
 
         StockChart {

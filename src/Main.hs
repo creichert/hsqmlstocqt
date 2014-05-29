@@ -14,10 +14,12 @@ main = do
     sn  <- newMVar "" -- stockName
     sdc <- newMVar "d" -- stockDataCycle
     r   <- newMVar False -- ready
+    sp  <- newMVar 0.0 -- stockPrice
+    m   <- newMVar 0.0 -- stockPriceModified
 
     sis <- mapM newObjectDC $ genStockList stocks
 
-    sm  <- newObjectDC $ StockModel sid sn sdc r
+    sm  <- newObjectDC $ StockModel sid sn sdc r sp m
     ss  <- newObjectDC $ StockSettings y
     sc  <- newObjectDC $ StocQt sm sis ss
 

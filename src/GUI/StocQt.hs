@@ -16,6 +16,8 @@ data StockModel = StockModel { stockId        :: MVar T.Text
                              , stockName      :: MVar T.Text
                              , stockDataCycle :: MVar T.Text
                              , ready          :: MVar Bool
+                             , stockPrice     :: MVar Double
+                             , stockPriceDelta :: MVar Double
                              } deriving Typeable
 
 type ChartType = T.Text
@@ -31,6 +33,8 @@ data StockIdChanged deriving Typeable
 data StockNameChanged deriving Typeable
 data StockDataCycleChanged deriving Typeable
 data ReadyChanged deriving Typeable
+data StockPriceChanged deriving Typeable
+data StockPriceDeltaChanged deriving Typeable
 data ChartTypeChanged deriving Typeable
 
 instance DefaultClass StocQt where
@@ -49,11 +53,17 @@ instance DefaultClass StockModel where
             , defPropertySigRW "stockDataCycle" stockDataCycleChanged
                         (getProperty stockDataCycle) $ (setProperty stockDataCycle) stockDataCycleChanged
             , defPropertySigRW "ready" readyChanged (getProperty ready) $ setProperty ready readyChanged
+            , defPropertySigRW "stockPrice" stockPriceChanged
+                        (getProperty stockPrice) $ setProperty stockPrice stockPriceChanged 
+            , defPropertySigRW "stockPriceDelta" stockPriceDeltaChanged
+                        (getProperty stockPriceDelta) $ setProperty stockPriceDelta stockPriceDeltaChanged 
             ]
       where stockIdChanged = Proxy :: Proxy StockIdChanged
             stockNameChanged = Proxy :: Proxy StockNameChanged
             stockDataCycleChanged = Proxy :: Proxy StockDataCycleChanged
             readyChanged = Proxy :: Proxy ReadyChanged
+            stockPriceChanged = Proxy :: Proxy StockPriceChanged
+            stockPriceDeltaChanged = Proxy :: Proxy StockPriceDeltaChanged
 
 instance DefaultClass StockListItem where
     classMembers = [
@@ -76,6 +86,12 @@ instance SignalKeyClass StockNameChanged where
 
 instance SignalKeyClass StockDataCycleChanged where
     type SignalParams StockDataCycleChanged = IO ()
+
+instance SignalKeyClass StockPriceChanged where
+    type SignalParams StockPriceChanged = IO ()
+
+instance SignalKeyClass StockPriceDeltaChanged where
+    type SignalParams StockPriceDeltaChanged = IO ()
 
 instance SignalKeyClass ReadyChanged where
     type SignalParams ReadyChanged = IO ()

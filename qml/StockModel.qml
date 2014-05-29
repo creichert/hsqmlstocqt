@@ -44,8 +44,6 @@ ListModel {
     id: model
     property var startDate
     property var endDate
-    property real stockPrice: 0.0
-    property real stockPriceChanged: 0.0
     property real highestPrice: 0
     property real highestVolume: 0
 
@@ -146,8 +144,8 @@ ListModel {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (model.count > 0) {
                         stockModel.ready = true;
-                        model.stockPrice = model.get(0).adjusted;
-                        model.stockPriceChanged = model.count > 1 ? (Math.round((model.stockPrice - model.get(1).close) * 100) / 100) : 0;
+                        stockModel.stockPrice = model.get(0).adjusted;
+                        stockModel.stockPriceDelta = model.count > 1 ? (Math.round((stockModel.stockPrice - model.get(1).close) * 100) / 100) : 0;
                         model.dataReady(); //emit signal
                     }
                 }
