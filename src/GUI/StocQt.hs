@@ -42,11 +42,18 @@ instance DefaultClass StocQt where
 
 instance DefaultClass StockModel where
     classMembers = [
-              defPropertySigRW "stockId" (Proxy :: Proxy StockIdChanged) (getter stockId) setStockId
-            , defPropertySigRW "stockName" (Proxy :: Proxy StockNameChanged) (getter stockName) setStockName
-            , defPropertySigRW "stockDataCycle" (Proxy :: Proxy StockDataCycleChanged) (getter stockDataCycle) setStockDataCycle
-            , defPropertySigRW "ready" (Proxy :: Proxy ReadyChanged) (getter ready) setReady
+              defPropertySigRW "stockId" stockIdChanged
+                        (getProperty stockId) $ setProperty stockId stockIdChanged
+            , defPropertySigRW "stockName" stockNameChanged
+                        (getProperty stockName) $ setProperty stockName stockNameChanged
+            , defPropertySigRW "stockDataCycle" stockDataCycleChanged
+                        (getProperty stockDataCycle) $ (setProperty stockDataCycle) stockDataCycleChanged
+            , defPropertySigRW "ready" readyChanged (getProperty ready) $ setProperty ready readyChanged
             ]
+      where stockIdChanged = Proxy :: Proxy StockIdChanged
+            stockNameChanged = Proxy :: Proxy StockNameChanged
+            stockDataCycleChanged = Proxy :: Proxy StockDataCycleChanged
+            readyChanged = Proxy :: Proxy ReadyChanged
 
 instance DefaultClass StockListItem where
     classMembers = [
@@ -56,8 +63,10 @@ instance DefaultClass StockListItem where
 
 instance DefaultClass StockSettings where
     classMembers = [
-              defPropertySigRW "chartType" (Proxy :: Proxy ChartTypeChanged) (getter chartType) setChartType
+              defPropertySigRW "chartType" chartTypeChanged
+                        (getProperty chartType) $ setProperty chartType chartTypeChanged
             ]
+      where chartTypeChanged = Proxy :: Proxy ChartTypeChanged
 
 instance SignalKeyClass StockIdChanged where
     type SignalParams StockIdChanged = IO ()
@@ -74,28 +83,13 @@ instance SignalKeyClass ReadyChanged where
 instance SignalKeyClass ChartTypeChanged where
     type SignalParams ChartTypeChanged = IO ()
 
-getter :: (tt -> MVar a) -> ObjRef tt -> IO a
-getter gtr = readMVar . gtr . fromObjRef
+getProperty :: (tt -> MVar a) -> ObjRef tt -> IO a
+getProperty gtr = readMVar . gtr . fromObjRef
 
-setStockId :: ObjRef StockModel -> T.Text -> IO ()
-setStockId sm sid = modifyMVar_ (stockId $ fromObjRef sm) $ \_ ->
-        fireSignal (Proxy :: Proxy StockIdChanged) sm >> return sid
-
-setStockName :: ObjRef StockModel -> T.Text -> IO ()
-setStockName sm sn = modifyMVar_ (stockName $ fromObjRef sm) $ \_ ->
-        fireSignal (Proxy :: Proxy StockNameChanged) sm >> return sn
-
-setStockDataCycle :: ObjRef StockModel -> T.Text -> IO ()
-setStockDataCycle sm sdc = modifyMVar_ (stockDataCycle $ fromObjRef sm) $ \_ ->
-        fireSignal (Proxy :: Proxy StockDataCycleChanged) sm >> return sdc
-
-setReady :: ObjRef StockModel -> Bool -> IO ()
-setReady sm r = modifyMVar_ (ready $ fromObjRef sm) $ \_ ->
-        fireSignal (Proxy :: Proxy StockDataCycleChanged) sm >> return r
-
-setChartType :: ObjRef StockSettings -> ChartType -> IO ()
-setChartType ss ct = modifyMVar_ (chartType $ fromObjRef ss) $ \_ ->
-        fireSignal (Proxy :: Proxy ChartTypeChanged) ss >> return ct
+-- | Set property on a DefaultClass and fire NOTIFY signal.
+-- setProperty :: (tt -> MVar a) -> sig -> ObjRef tt -> a -> IO ()
+setProperty setr sig obj v = modifyMVar_ (setr $ fromObjRef obj) $ \_ ->
+        fireSignal sig obj >> return v
 
 genStockList :: [(T.Text, T.Text)] -> [StockListItem]
 genStockList [] = []
