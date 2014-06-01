@@ -44,15 +44,15 @@ ListModel {
     id: model
 
     function indexOf(date) {
-        var end = new Date(model.get(0).date);
-        var start = new Date(model.get(model.count - 1).date);
+        var end = new Date(stockModel.get(0).date);
+        var start = new Date(stockModel.get(stockModel.count() - 1).date);
         if (end <= date)
-            return model.count -1;
+            return stockModel.count() -1;
 
         if (start >= date)
             return 0;
 
-        for (var i = 0; i < model.count; i++) {
+        for (var i = 0; i < stockModel.count(); i++) {
             var d = new Date(model.get(i).date);
             if ( d === date)
                 return i;
@@ -103,7 +103,7 @@ ListModel {
         xhr.open("GET", req, true);
 
         stockModel.ready = false;
-        model.clear();
+        stockModel.clear();
         var i = 1; //skip the first line
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.LOADING || xhr.readyState === XMLHttpRequest.DONE) {
@@ -112,14 +112,14 @@ ListModel {
                 for (;i < records.length; i++ ) {
                     var r = records[i].split(',');
                     if (r.length === 7)
-                        model.append(stockModel.createStockPrice(r[0], r[1], r[2], r[3], r[4], r[5], r[6]));
+                        stockModel.append(stockModel.createStockPrice(r[0], r[1], r[2], r[3], r[4], r[5], r[6]));
                 }
 
                 if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (model.count > 0) {
+                    if (stockModel.count() > 0) {
                         stockModel.ready = true;
-                        stockModel.stockPrice = model.get(0).adjusted;
-                        stockModel.stockPriceDelta = model.count > 1 ? (Math.round((stockModel.stockPrice - model.get(1).close) * 100) / 100) : 0;
+                        stockModel.stockPrice = stockModel.get(0).adjusted;
+                        stockModel.stockPriceDelta = stockModel.count() > 1 ? (Math.round((stockModel.stockPrice - stockModel.get(1).close) * 100) / 100) : 0;
                     }
                 }
             }

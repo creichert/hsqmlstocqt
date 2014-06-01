@@ -7,8 +7,10 @@ import qualified Data.Text as T
 import Data.Typeable
 import Graphics.QML
 
--- data Date = Date Int Int Int deriving Typeable
+type ChartType = T.Text
+type Color = T.Text -- RGB in Hex.
 type Date = T.Text
+
 -- | QML Context Object.
 data StocQt = StocQt { stockModel     :: ObjRef StockModel
                      , stockListModel :: [ObjRef StockListItem]
@@ -28,8 +30,6 @@ data StockModel = StockModel { stockId :: MVar T.Text
                              , stock :: MVar [ObjRef StockItem]
                              } deriving Typeable
 
-type ChartType = T.Text
-type Color = T.Text -- RGB in Hex.
 data StockSettings = StockSettings { chartType   :: MVar ChartType
                                    , drawHighPrice :: MVar Bool
                                    , drawLowPrice :: MVar Bool
@@ -110,7 +110,11 @@ instance DefaultClass StockModel where
             , defPropertySigRW "stock" stockReady
                         (getProperty stock) $ setProperty stock stockReady
 
-            -- Methods
+            -- Methods. Some of these redefine ListModel.
+            , defMethod "append" appendStock
+            , defMethod "count" countStock
+            , defMethod "get" getStock
+            , defMethod "clear" clearStock
             , defMethod "createStockPrice" createStockPrice
             ]
       where stockIdChanged = Proxy :: Proxy StockIdChanged
@@ -289,8 +293,26 @@ createStockPrice sm d o h l c v a = do
             -- | This is called every time causing a performance
             -- bottleneck. A dataReady signal should be sent after
             -- all items are made in the parent loop.
-            fireSignal (Proxy :: Proxy StockReady) sm
+            -- fireSignal (Proxy :: Proxy StockReady) sm
             newObjectDC $ StockItem d o h l c (truncate v) a
+
+appendStock :: ObjRef StockModel -> ObjRef StockItem -> IO ()
+appendStock sm si = modifyMVar_ (stock $ fromObjRef sm) (\xs -> return $ xs ++ [si]) >>
+                    fireSignal (Proxy :: Proxy StockReady) sm
+
+getStock :: ObjRef StockModel -> Int -> IO (ObjRef StockItem)
+getStock sm i = do
+        st <- readMVar $ stock $ fromObjRef sm
+        return $ st !! i
+
+clearStock :: ObjRef StockModel -> IO ()
+clearStock sm = modifyMVar_ (stock $ fromObjRef sm) (\_ -> return []) >>
+                fireSignal (Proxy :: Proxy StockReady) sm
+
+countStock :: ObjRef StockModel -> IO Int
+countStock sm = do
+    ls <- readMVar $ stock $ fromObjRef sm
+    return $ length ls
 
 genStockList :: [(T.Text, T.Text)] -> [StockListItem]
 genStockList [] = []

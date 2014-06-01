@@ -236,7 +236,7 @@ Rectangle {
             console.log("highest price:" + highestPrice + ", highest volume:" + highestVolume)
             var points = [];
             for (var i = 0; i <= last - first; i+=pixelSkip) {
-                var price = model.get(i + first);
+                var price = stockModel.get(i + first);
                 points.push({
                                 x: i*canvas.width/(last-first+1),
                                 open: price.open,
