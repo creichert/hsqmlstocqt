@@ -59,10 +59,6 @@ ListView {
 
     StockModel {
         id: stock
-        onDataReady: {
-            root.positionViewAtIndex(1, ListView.SnapPosition)
-            stockView.update()
-        }
     }
 
     model: ObjectModel {
@@ -76,7 +72,6 @@ ListView {
             id: stockView
             width: root.width
             height: root.height
-            stocklist: listView
             stock: stock
 
             onListViewClicked: root.currentIndex = 0
@@ -93,6 +88,10 @@ ListView {
     Connections {
         target: stockModel
         onStockIdChanged: updateTimer.restart()
+        onStockChanged: {
+            root.positionViewAtIndex(1, ListView.SnapPosition)
+            stockView.update()
+        }
     }
 
     Connections {

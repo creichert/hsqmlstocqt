@@ -43,8 +43,6 @@ import QtQuick 2.0
 ListModel {
     id: model
 
-    signal dataReady
-
     function indexOf(date) {
         var end = new Date(model.get(0).date);
         var start = new Date(model.get(model.count - 1).date);
@@ -94,22 +92,6 @@ ListModel {
         return request;
     }
 
-    function createStockPrice(r) {
-        if (stockModel.highestPrice < r[2])
-            stockModel.highestPrice = r[2];
-        if (stockModel.highestVolume < r[5])
-            stockModel.highestVolume = r[5];
-        return {
-                "date": r[0],
-                "open":r[1],
-                "high":r[2],
-                "low":r[3],
-                "close":r[4],
-                "volume":r[5],
-                "adjusted":r[6]
-               };
-    }
-
     function updateStock() {
         var req = requestUrl();
 
@@ -130,7 +112,7 @@ ListModel {
                 for (;i < records.length; i++ ) {
                     var r = records[i].split(',');
                     if (r.length === 7)
-                        model.append(createStockPrice(r));
+                        model.append(stockModel.createStockPrice(r[0], r[1], r[2], r[3], r[4], r[5], r[6]));
                 }
 
                 if (xhr.readyState === XMLHttpRequest.DONE) {
@@ -138,7 +120,6 @@ ListModel {
                         stockModel.ready = true;
                         stockModel.stockPrice = model.get(0).adjusted;
                         stockModel.stockPriceDelta = model.count > 1 ? (Math.round((stockModel.stockPrice - model.get(1).close) * 100) / 100) : 0;
-                        model.dataReady(); //emit signal
                     }
                 }
             }

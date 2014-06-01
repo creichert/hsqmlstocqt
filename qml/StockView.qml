@@ -47,7 +47,6 @@ Rectangle {
     color: "#423A2F"
 
     property var stock: null
-    property var stocklist: null
     signal listViewClicked
     signal settingsClicked
 

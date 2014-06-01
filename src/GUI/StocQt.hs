@@ -2,6 +2,7 @@
 module GUI.StocQt where
 
 import Control.Concurrent
+import Control.Monad
 import qualified Data.Text as T
 import Data.Typeable
 import Graphics.QML
@@ -24,6 +25,7 @@ data StockModel = StockModel { stockId :: MVar T.Text
                              , highestVolume :: MVar Double
                              , startDate :: MVar Date
                              , endDate :: MVar Date
+                             , stock :: MVar [ObjRef StockItem]
                              } deriving Typeable
 
 type ChartType = T.Text
@@ -46,6 +48,15 @@ data StockListItem = StockListItem { name        :: T.Text
                                    , stockItemId :: T.Text
                                    } deriving (Show, Typeable)
 
+data StockItem = StockItem { date :: Date
+                           , open :: Double
+                           , high :: Double
+                           , low :: Double
+                           , close :: Double
+                           , volume :: Int
+                           , adjusted :: Double
+                           } deriving Typeable
+
 -- StockModel Signals
 data StockIdChanged deriving Typeable
 data StockNameChanged deriving Typeable
@@ -57,6 +68,7 @@ data HighestPriceChanged deriving Typeable
 data HighestVolumeChanged deriving Typeable
 data StartDateChanged deriving Typeable
 data EndDateChanged deriving Typeable
+data StockReady deriving Typeable
 
 -- StockSettings Signals
 data ChartTypeChanged deriving Typeable
@@ -95,6 +107,11 @@ instance DefaultClass StockModel where
                         (getProperty startDate) $ setProperty startDate startDateChanged
             , defPropertySigRW "endDate" endDateChanged
                         (getProperty endDate) $ setProperty endDate endDateChanged
+            , defPropertySigRW "stock" stockReady
+                        (getProperty stock) $ setProperty stock stockReady
+
+            -- Methods
+            , defMethod "createStockPrice" createStockPrice
             ]
       where stockIdChanged = Proxy :: Proxy StockIdChanged
             stockNameChanged = Proxy :: Proxy StockNameChanged
@@ -106,6 +123,7 @@ instance DefaultClass StockModel where
             highestVolumeChanged = Proxy :: Proxy HighestVolumeChanged
             startDateChanged = Proxy :: Proxy StartDateChanged
             endDateChanged = Proxy :: Proxy EndDateChanged
+            stockReady = Proxy :: Proxy StockReady
 
 instance DefaultClass StockListItem where
     classMembers = [
@@ -143,6 +161,17 @@ instance DefaultClass StockSettings where
             drawVolumeChanged = Proxy :: Proxy DrawVolumeChanged
             drawKLineChanged = Proxy :: Proxy DrawKLineChanged
 
+instance DefaultClass StockItem where
+    classMembers = [
+              defPropertyRO "date" $ return . date . fromObjRef
+            , defPropertyRO "open" $ return . open . fromObjRef
+            , defPropertyRO "high" $ return . high . fromObjRef
+            , defPropertyRO "low" $ return . low . fromObjRef
+            , defPropertyRO "close" $ return . close . fromObjRef
+            , defPropertyRO "volume" $ return . volume . fromObjRef
+            , defPropertyRO "adjusted" $ return . adjusted. fromObjRef
+            ]
+
 instance SignalKeyClass StockIdChanged where
     type SignalParams StockIdChanged = IO ()
 
@@ -172,6 +201,9 @@ instance SignalKeyClass StartDateChanged where
 
 instance SignalKeyClass EndDateChanged where
     type SignalParams EndDateChanged = IO ()
+
+instance SignalKeyClass StockReady where
+    type SignalParams StockReady = IO ()
 
 instance SignalKeyClass ChartTypeChanged where
     type SignalParams ChartTypeChanged = IO ()
@@ -206,7 +238,8 @@ defaultStockModel = do
     hv  <- newMVar 0.0 -- highestVolume
     sd  <- newMVar $ "1995-03-25" -- startDate 25, April 1995
     ed  <- newMVar $ "2014-05-31" -- Today...
-    return $ StockModel sid sn sdc r sp m hp hv sd ed
+    st  <- newMVar [] -- stock
+    return $ StockModel sid sn sdc r sp m hp hv sd ed st
 
 defaultStockSettings :: IO StockSettings
 defaultStockSettings = do
@@ -234,6 +267,30 @@ getProperty gtr = readMVar . gtr . fromObjRef
 -- setProperty :: (tt -> MVar a) -> sig -> ObjRef tt -> a -> IO ()
 setProperty setr sig obj v = modifyMVar_ (setr $ fromObjRef obj) $ \_ ->
         fireSignal sig obj >> return v
+
+createStockPrice :: ObjRef StockModel ->
+                    Date -> -- * date
+                    Double -> -- * open
+                    Double -> -- * high
+                    Double -> -- * low
+                    Double -> -- * close
+                    Double -> -- * volume
+                    Double -> -- * adjusted
+                    IO (ObjRef StockItem)
+createStockPrice sm d o h l c v a = do
+            let sm' = fromObjRef sm
+
+            h' <- readMVar $ highestPrice sm'
+            when (h' < h) $ setProperty highestPrice (Proxy :: Proxy HighestPriceChanged) sm h
+
+            v' <- readMVar $ highestVolume sm'
+            when (v' < v) $ setProperty highestVolume (Proxy :: Proxy HighestVolumeChanged) sm v
+
+            -- | This is called every time causing a performance
+            -- bottleneck. A dataReady signal should be sent after
+            -- all items are made in the parent loop.
+            fireSignal (Proxy :: Proxy StockReady) sm
+            newObjectDC $ StockItem d o h l c (truncate v) a
 
 genStockList :: [(T.Text, T.Text)] -> [StockListItem]
 genStockList [] = []
