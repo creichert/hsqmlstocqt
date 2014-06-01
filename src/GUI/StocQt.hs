@@ -93,7 +93,7 @@ instance DefaultClass StockModel where
             , defPropertySigRW "stockName" stockNameChanged
                         (getProperty stockName) $ setProperty stockName stockNameChanged
             , defPropertySigRW "stockDataCycle" stockDataCycleChanged
-                        (getProperty stockDataCycle) $ (setProperty stockDataCycle) stockDataCycleChanged
+                        (getProperty stockDataCycle) $ setProperty stockDataCycle stockDataCycleChanged
             , defPropertySigRW "ready" readyChanged (getProperty ready) $ setProperty ready readyChanged
             , defPropertySigRW "stockPrice" stockPriceChanged
                         (getProperty stockPrice) $ setProperty stockPrice stockPriceChanged 
@@ -241,8 +241,8 @@ defaultStockModel = do
     m   <- newMVar 0.0 -- stockPriceModified
     hp  <- newMVar 0.0 -- highestPrice
     hv  <- newMVar 0.0 -- highestVolume
-    sd  <- newMVar $ "1995-03-25" -- startDate 25, April 1995
-    ed  <- newMVar $ "2014-05-31" -- Today...
+    sd  <- newMVar "1995-03-25" -- startDate 25, April 1995
+    ed  <- newMVar "2014-05-31" -- Today...
     st  <- newMVar [] -- stock
     return $ StockModel sid sn sdc r sp m hp hv sd ed st
 
