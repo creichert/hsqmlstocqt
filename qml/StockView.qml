@@ -114,8 +114,8 @@ Rectangle {
             anchors.topMargin: 5
             color: stockModel.stockPriceDelta < 0 ? "#A43D3D" : "#679B3A"
             font.pointSize: 25
-            text: stockModel.stockPriceDelta + " (" + stockModel.stockPriceDeltaPercentage() + "%)"
-            }
+            text: stockModel.stockPriceDelta + " (" + stockModel.stockPriceDeltaPercentage().toString().substring(0,4) + "%)"
+        }
 
         StockChart {
             id: chart
