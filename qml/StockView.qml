@@ -114,8 +114,8 @@ Rectangle {
             anchors.topMargin: 5
             color: stockModel.stockPriceDelta < 0 ? "#A43D3D" : "#679B3A"
             font.pointSize: 25
-            text: stockModel.stockPriceDelta + " (" + Math.abs(Math.round(stockModel.stockPriceDelta/(stockModel.stockPrice - stockModel.stockPriceDelta) * 100))/100  +"%)"
-        }
+            text: stockModel.stockPriceDelta + " (" + stockModel.stockPriceDeltaPercentage() + "%)"
+            }
 
         StockChart {
             id: chart

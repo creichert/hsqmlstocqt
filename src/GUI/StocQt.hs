@@ -116,6 +116,7 @@ instance DefaultClass StockModel where
             , defMethod "get" getStock
             , defMethod "clear" clearStock
             , defMethod "createStockPrice" createStockPrice
+            , defMethod "stockPriceDeltaPercentage" stockPriceDeltaPercentage
             ]
       where stockIdChanged = Proxy :: Proxy StockIdChanged
             stockNameChanged = Proxy :: Proxy StockNameChanged
@@ -290,10 +291,6 @@ createStockPrice sm d o h l c v a = do
             v' <- readMVar $ highestVolume sm'
             when (v' < v) $ setProperty highestVolume (Proxy :: Proxy HighestVolumeChanged) sm v
 
-            -- | This is called every time causing a performance
-            -- bottleneck. A dataReady signal should be sent after
-            -- all items are made in the parent loop.
-            -- fireSignal (Proxy :: Proxy StockReady) sm
             newObjectDC $ StockItem d o h l c (truncate v) a
 
 appendStock :: ObjRef StockModel -> ObjRef StockItem -> IO ()
@@ -313,6 +310,12 @@ countStock :: ObjRef StockModel -> IO Int
 countStock sm = do
     ls <- readMVar $ stock $ fromObjRef sm
     return $ length ls
+
+stockPriceDeltaPercentage :: ObjRef StockModel -> IO Double
+stockPriceDeltaPercentage sm = do
+        spd <- readMVar $ stockPriceDelta $ fromObjRef sm
+        sp  <- readMVar $ stockPrice $ fromObjRef sm
+        return $ abs $ spd / (sp - spd) * 100.0
 
 genStockList :: [(T.Text, T.Text)] -> [StockListItem]
 genStockList [] = []
