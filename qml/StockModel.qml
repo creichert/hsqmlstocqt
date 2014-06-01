@@ -42,8 +42,6 @@ import QtQuick 2.0
 
 ListModel {
     id: model
-    property var startDate
-    property var endDate
 
     signal dataReady
 
@@ -68,12 +66,6 @@ ListModel {
         if (stockModel.stockId === "")
             return;
 
-        if (startDate === undefined)
-            startDate = new Date(1995, 3, 25); //default: 25 April 1995
-
-        if (endDate === undefined)
-            endDate = new Date(); //today
-
         if (stockModel.stockDataCycle !== "d" &&
                 stockModel.stockDataCycle !== "w" &&
                 stockModel.stockDataCycle !== "m") {
@@ -88,6 +80,8 @@ ListModel {
                 g:data cycle(d daily,  w weekly, m monthly, v Dividend)
           */
         var request = "http://ichart.finance.yahoo.com/table.csv?";
+        var startDate = new Date(stockModel.startDate)
+        var endDate = new Date(stockModel.endDate)
         request += "s=" + stockModel.stockId;
         request += "&a=" + startDate.getDate();
         request += "&b=" + startDate.getMonth();

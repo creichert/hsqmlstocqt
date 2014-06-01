@@ -48,14 +48,12 @@ Rectangle {
 
     property var stock: null
     property var stocklist: null
-    property var settings: null
     signal listViewClicked
     signal settingsClicked
 
     function update() {
-        if (!settings)
+        if (!stockSettings)
             return;
-        chart.endDate = settings.endDate
         chart.update()
     }
 
@@ -127,7 +125,6 @@ Rectangle {
             anchors.topMargin: 30
             width: parent.width
             model: root.stock
-            settings: root.settings
         }
     }
 }

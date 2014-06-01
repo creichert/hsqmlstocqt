@@ -45,8 +45,6 @@ Rectangle {
     width: 320
     height: 480
     color: "#423A2F"
-    property var startDate : startDatePicker.date
-    property var endDate : endDatePicker.date
 
     Image {
         id: logo
@@ -73,6 +71,7 @@ Rectangle {
         anchors.leftMargin: 30
         anchors.top: startDateText.bottom
         anchors.topMargin: 8
+        onDateChanged: stockModel.startDate = Qt.formatDate(startDatePicker.date, "yyyy-MM-dd")
     }
 
     Text {
@@ -92,6 +91,7 @@ Rectangle {
         anchors.leftMargin: 30
         anchors.top: endDateText.bottom
         anchors.topMargin: 8
+        onDateChanged: stockModel.endDate = Qt.formatDate(endDatePicker.date, "yyyy-MM-dd")
     }
 
     Text {

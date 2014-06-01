@@ -48,19 +48,17 @@ Rectangle {
 
     property var _months: [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ]
     property var model: null // Temporarily renamed from stockModel while integrating HsQML.
-    property var startDate: new Date()
-    property var endDate: new Date()
-    property var settings
 
     function update() {
+        var endDate = new Date(stockModel.endDate)
         if (stockSettings.chartType === "year")
-            chart.startDate = new Date(chart.endDate.getFullYear() - 1, chart.endDate.getMonth(), chart.endDate.getDate());
+            stockModel.startDate = Qt.formatDate(new Date(endDate.getFullYear() - 1, endDate.getMonth(), endDate.getDate()), "yyyy-MM-dd");
         else if (stockSettings.chartType === "month")
-            chart.startDate = new Date(chart.endDate.getFullYear() , chart.endDate.getMonth() -1, chart.endDate.getDate());
+            stockModel.startDate = Qt.formatDate(new Date(endDate.getFullYear() , endDate.getMonth() -1, endDate.getDate()), "yyyy-MM-dd");
         else if (stockSettings.chartType === "week")
-            chart.startDate = new Date(chart.endDate.getFullYear() , chart.endDate.getMonth(), chart.endDate.getDate() - 7);
+            stockModel.startDate = Qt.formatDate(new Date(endDate.getFullYear() , endDate.getMonth(), endDate.getDate() - 7), "yyyy-MM-dd");
         else
-            chart.startDate = new Date(1995, 3, 25);
+            stockModel.startDate = Qt.formatDate(new Date(1995, 3, 25));
 
         canvas.requestPaint();
     }
@@ -74,7 +72,7 @@ Rectangle {
         anchors.left: parent.left
         anchors.leftMargin: 20
         anchors.top: parent.top
-        text: _months[startDate.getMonth()] + "\n" + startDate.getFullYear()
+        text: _months[(new Date(stockModel.startDate)).getMonth()] + "\n" + (new Date(stockModel.startDate)).getFullYear()
     }
 
     Text {
@@ -86,7 +84,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.leftMargin: 20
         anchors.top: parent.top
-        text: _months[endDate.getMonth()] + "\n" + endDate.getFullYear()
+        text: _months[(new Date(stockModel.endDate)).getMonth()] + "\n" + (new Date(stockModel.endDate)).getFullYear()
     }
 
     Canvas {
@@ -218,6 +216,8 @@ Rectangle {
 
         onPaint: {
             var ctx = canvas.getContext("2d");
+            var startDate = new Date(stockModel.startDate);
+            var endDate = new Date(stockModel.endDate);
 
             ctx.globalCompositeOperation = "source-over";
             ctx.lineWidth = 1;
@@ -226,8 +226,8 @@ Rectangle {
             if (!stockModel.ready)
                 return;
 
-            last = model.indexOf(chart.endDate)
-            first = last - (chart.endDate.getTime() - chart.startDate.getTime())/86400000;
+            last = model.indexOf(endDate)
+            first = last - (endDate.getTime() - startDate.getTime())/86400000;
             first = Math.max(first, 0);
             console.log("painting...  first:" + first + ", last:" + last);
 

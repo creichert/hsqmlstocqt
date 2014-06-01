@@ -59,10 +59,6 @@ ListView {
 
     StockModel {
         id: stock
-        startDate: settings.startDate
-        endDate: settings.endDate
-        onStartDateChanged: updateTimer.restart()
-        onEndDateChanged: updateTimer.restart()
         onDataReady: {
             root.positionViewAtIndex(1, ListView.SnapPosition)
             stockView.update()
@@ -81,7 +77,6 @@ ListView {
             width: root.width
             height: root.height
             stocklist: listView
-            settings: settings
             stock: stock
 
             onListViewClicked: root.currentIndex = 0

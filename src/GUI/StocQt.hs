@@ -6,6 +6,8 @@ import qualified Data.Text as T
 import Data.Typeable
 import Graphics.QML
 
+-- data Date = Date Int Int Int deriving Typeable
+type Date = T.Text
 -- | QML Context Object.
 data StocQt = StocQt { stockModel     :: ObjRef StockModel
                      , stockListModel :: [ObjRef StockListItem]
@@ -20,6 +22,8 @@ data StockModel = StockModel { stockId :: MVar T.Text
                              , stockPriceDelta :: MVar Double
                              , highestPrice :: MVar Double
                              , highestVolume :: MVar Double
+                             , startDate :: MVar Date
+                             , endDate :: MVar Date
                              } deriving Typeable
 
 type ChartType = T.Text
@@ -42,7 +46,7 @@ data StockListItem = StockListItem { name        :: T.Text
                                    , stockItemId :: T.Text
                                    } deriving (Show, Typeable)
 
--- Signals
+-- StockModel Signals
 data StockIdChanged deriving Typeable
 data StockNameChanged deriving Typeable
 data StockDataCycleChanged deriving Typeable
@@ -51,6 +55,10 @@ data StockPriceChanged deriving Typeable
 data StockPriceDeltaChanged deriving Typeable
 data HighestPriceChanged deriving Typeable
 data HighestVolumeChanged deriving Typeable
+data StartDateChanged deriving Typeable
+data EndDateChanged deriving Typeable
+
+-- StockSettings Signals
 data ChartTypeChanged deriving Typeable
 data DrawHighPriceChanged deriving Typeable
 data DrawLowPriceChanged deriving Typeable
@@ -83,6 +91,10 @@ instance DefaultClass StockModel where
                         (getProperty highestPrice) $ setProperty highestPrice highestPriceChanged 
             , defPropertySigRW "highestVolume" highestVolumeChanged
                         (getProperty highestVolume) $ setProperty highestVolume highestVolumeChanged 
+            , defPropertySigRW "startDate" startDateChanged
+                        (getProperty startDate) $ setProperty startDate startDateChanged
+            , defPropertySigRW "endDate" endDateChanged
+                        (getProperty endDate) $ setProperty endDate endDateChanged
             ]
       where stockIdChanged = Proxy :: Proxy StockIdChanged
             stockNameChanged = Proxy :: Proxy StockNameChanged
@@ -92,6 +104,8 @@ instance DefaultClass StockModel where
             stockPriceDeltaChanged = Proxy :: Proxy StockPriceDeltaChanged
             highestPriceChanged = Proxy :: Proxy HighestPriceChanged
             highestVolumeChanged = Proxy :: Proxy HighestVolumeChanged
+            startDateChanged = Proxy :: Proxy StartDateChanged
+            endDateChanged = Proxy :: Proxy EndDateChanged
 
 instance DefaultClass StockListItem where
     classMembers = [
@@ -153,6 +167,12 @@ instance SignalKeyClass HighestVolumeChanged where
 instance SignalKeyClass ReadyChanged where
     type SignalParams ReadyChanged = IO ()
 
+instance SignalKeyClass StartDateChanged where
+    type SignalParams StartDateChanged = IO ()
+
+instance SignalKeyClass EndDateChanged where
+    type SignalParams EndDateChanged = IO ()
+
 instance SignalKeyClass ChartTypeChanged where
     type SignalParams ChartTypeChanged = IO ()
 
@@ -184,7 +204,9 @@ defaultStockModel = do
     m   <- newMVar 0.0 -- stockPriceModified
     hp  <- newMVar 0.0 -- highestPrice
     hv  <- newMVar 0.0 -- highestVolume
-    return $ StockModel sid sn sdc r sp m hp hv
+    sd  <- newMVar $ "1995-03-25" -- startDate 25, April 1995
+    ed  <- newMVar $ "2014-05-31" -- Today...
+    return $ StockModel sid sn sdc r sp m hp hv sd ed
 
 defaultStockSettings :: IO StockSettings
 defaultStockSettings = do
