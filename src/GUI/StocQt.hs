@@ -4,6 +4,7 @@ module GUI.StocQt where
 import Control.Concurrent
 import Control.Monad
 import qualified Data.Text as T
+import Data.Proxy
 import Data.Typeable
 import Graphics.QML
 
