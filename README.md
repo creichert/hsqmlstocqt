@@ -1,7 +1,7 @@
 # Build
 ```
     cabal sandbox init
-    cabal sandbox install --dependencies-only
+    cabal install --dependencies-only
     cabal build
 ```
 
