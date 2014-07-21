@@ -92,7 +92,7 @@ Rectangle {
         width: parent.width
         anchors.top: toDate.bottom
         anchors.bottom: parent.bottom
-        renderTarget: Canvas.FramebufferObject
+        renderTarget: Canvas.Image
         antialiasing: true
         property int frames: first
         property int mouseX: 0
