@@ -1,12 +1,15 @@
-{-# LANGUAGE DeriveDataTypeable, OverloadedStrings, TypeFamilies #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings  #-}
+{-# LANGUAGE TypeFamilies       #-}
 module GUI.StocQt where
 
-import Control.Concurrent
-import Control.Monad
-import qualified Data.Text as T
-import Data.Proxy
-import Data.Typeable
-import Graphics.QML
+import           Control.Applicative ((<$>), (<*>))
+import           Control.Concurrent
+import           Control.Monad
+import           Data.Proxy
+import qualified Data.Text           as T
+import           Data.Typeable
+import           Graphics.QML
 
 type ChartType = T.Text
 type Color = T.Text -- RGB in Hex.
@@ -18,43 +21,43 @@ data StocQt = StocQt { stockModel     :: ObjRef StockModel
                      , stockSettings  :: ObjRef StockSettings
                      } deriving Typeable
 
-data StockModel = StockModel { stockId :: MVar T.Text
-                             , stockName :: MVar T.Text
-                             , stockDataCycle :: MVar T.Text
-                             , ready :: MVar Bool
-                             , stockPrice :: MVar Double
+data StockModel = StockModel { stockId         :: MVar T.Text
+                             , stockName       :: MVar T.Text
+                             , stockDataCycle  :: MVar T.Text
+                             , ready           :: MVar Bool
+                             , stockPrice      :: MVar Double
                              , stockPriceDelta :: MVar Double
-                             , highestPrice :: MVar Double
-                             , highestVolume :: MVar Double
-                             , startDate :: MVar Date
-                             , endDate :: MVar Date
-                             , stock :: MVar [ObjRef StockItem]
+                             , highestPrice    :: MVar Double
+                             , highestVolume   :: MVar Double
+                             , startDate       :: MVar Date
+                             , endDate         :: MVar Date
+                             , stock           :: MVar [ObjRef StockItem]
                              } deriving Typeable
 
-data StockSettings = StockSettings { chartType   :: MVar ChartType
-                                   , drawHighPrice :: MVar Bool
-                                   , drawLowPrice :: MVar Bool
-                                   , drawOpenPrice :: MVar Bool
+data StockSettings = StockSettings { chartType      :: MVar ChartType
+                                   , drawHighPrice  :: MVar Bool
+                                   , drawLowPrice   :: MVar Bool
+                                   , drawOpenPrice  :: MVar Bool
                                    , drawClosePrice :: MVar Bool
-                                   , drawVolume :: MVar Bool
-                                   , drawKLine :: MVar Bool
-                                   , closeColor :: MVar Color
-                                   , highColor :: MVar Color
-                                   , lowColor :: MVar Color
-                                   , openColor :: MVar Color
-                                   , volumeColor :: MVar Color
+                                   , drawVolume     :: MVar Bool
+                                   , drawKLine      :: MVar Bool
+                                   , closeColor     :: MVar Color
+                                   , highColor      :: MVar Color
+                                   , lowColor       :: MVar Color
+                                   , openColor      :: MVar Color
+                                   , volumeColor    :: MVar Color
                                    } deriving Typeable
 
 data StockListItem = StockListItem { name        :: T.Text
                                    , stockItemId :: T.Text
                                    } deriving (Show, Typeable)
 
-data StockItem = StockItem { date :: Date
-                           , open :: Double
-                           , high :: Double
-                           , low :: Double
-                           , close :: Double
-                           , volume :: Int
+data StockItem = StockItem { date     :: Date
+                           , open     :: Double
+                           , high     :: Double
+                           , low      :: Double
+                           , close    :: Double
+                           , volume   :: Int
                            , adjusted :: Double
                            } deriving Typeable
 
@@ -97,13 +100,13 @@ instance DefaultClass StockModel where
                         (getProperty stockDataCycle) $ setProperty stockDataCycle stockDataCycleChanged
             , defPropertySigRW "ready" readyChanged (getProperty ready) $ setProperty ready readyChanged
             , defPropertySigRW "stockPrice" stockPriceChanged
-                        (getProperty stockPrice) $ setProperty stockPrice stockPriceChanged 
+                        (getProperty stockPrice) $ setProperty stockPrice stockPriceChanged
             , defPropertySigRW "stockPriceDelta" stockPriceDeltaChanged
-                        (getProperty stockPriceDelta) $ setProperty stockPriceDelta stockPriceDeltaChanged 
+                        (getProperty stockPriceDelta) $ setProperty stockPriceDelta stockPriceDeltaChanged
             , defPropertySigRW "highestPrice" highestPriceChanged
-                        (getProperty highestPrice) $ setProperty highestPrice highestPriceChanged 
+                        (getProperty highestPrice) $ setProperty highestPrice highestPriceChanged
             , defPropertySigRW "highestVolume" highestVolumeChanged
-                        (getProperty highestVolume) $ setProperty highestVolume highestVolumeChanged 
+                        (getProperty highestVolume) $ setProperty highestVolume highestVolumeChanged
             , defPropertySigRW "startDate" startDateChanged
                         (getProperty startDate) $ setProperty startDate startDateChanged
             , defPropertySigRW "endDate" endDateChanged
@@ -232,47 +235,53 @@ instance SignalKeyClass DrawVolumeChanged where
 instance SignalKeyClass DrawKLineChanged where
     type SignalParams DrawKLineChanged = IO ()
 
+
 defaultStockModel :: IO StockModel
-defaultStockModel = do
-    sid <- newMVar "" -- stockId
-    sn  <- newMVar "" -- stockName
-    sdc <- newMVar "d" -- stockDataCycle
-    r   <- newMVar False -- ready
-    sp  <- newMVar 0.0 -- stockPrice
-    m   <- newMVar 0.0 -- stockPriceModified
-    hp  <- newMVar 0.0 -- highestPrice
-    hv  <- newMVar 0.0 -- highestVolume
-    sd  <- newMVar "1995-03-25" -- startDate 25, April 1995
-    ed  <- newMVar "2014-05-31" -- Today...
-    st  <- newMVar [] -- stock
-    return $ StockModel sid sn sdc r sp m hp hv sd ed st
+defaultStockModel =
+  StockModel
+    <$> newMVar "" -- stockId
+    <*> newMVar "" -- stockName
+    <*> newMVar "d" -- stockDataCycle
+    <*> newMVar False -- ready
+    <*> newMVar 0.0 -- stockPrice
+    <*> newMVar 0.0 -- stockPriceModified
+    <*> newMVar 0.0 -- highestPrice
+    <*> newMVar 0.0 -- highestVolume
+    <*> newMVar "1995-03-25" -- startDate 25, April 1995
+    <*> newMVar "2014-05-31" -- Today...
+    <*> newMVar [] -- stock
+
 
 defaultStockSettings :: IO StockSettings
 defaultStockSettings = do
-    ct  <- newMVar "year" -- chartType
-    dhp <- newMVar False -- drawHighPrice
-    dlp <- newMVar False -- drawLowPrice
-    dop <- newMVar False -- drawOpenPrice
-    dcp <- newMVar True -- drawClosePrice
-    dv  <- newMVar True -- drawVolume
-    dkl <- newMVar False -- drawKLine
-    cc <- newMVar "#ecc088" -- closeColor
-    hc <- newMVar "#ff0000" -- highColor
-    lc <- newMVar "#00ff00" -- lowColor
-    oc <- newMVar "#0000ff" -- openColor
-    vc <- newMVar "#0000ff" -- volumeColor
-    return $ StockSettings ct dhp dlp dop dcp dv dkl cc hc lc oc vc
+  StockSettings
+    <$> newMVar "year" -- chartType
+    <*> newMVar False -- drawHighPrice
+    <*> newMVar False -- drawLowPrice
+    <*> newMVar False -- drawOpenPrice
+    <*> newMVar True -- drawClosePrice
+    <*> newMVar True -- drawVolume
+    <*> newMVar False -- drawKLine
+    <*> newMVar "#ecc088" -- closeColor
+    <*> newMVar "#ff0000" -- highColor
+    <*> newMVar "#00ff00" -- lowColor
+    <*> newMVar "#0000ff" -- openColor
+    <*> newMVar "#0000ff" -- volumeColor
+
 
 defaultStockListModel :: [StockListItem]
 defaultStockListModel = genStockList stocks
 
+
 getProperty :: (tt -> MVar a) -> ObjRef tt -> IO a
 getProperty gtr = readMVar . gtr . fromObjRef
+
 
 -- | Set property on a DefaultClass and fire NOTIFY signal.
 -- setProperty :: (tt -> MVar a) -> sig -> ObjRef tt -> a -> IO ()
 setProperty setr sig obj v = modifyMVar_ (setr $ fromObjRef obj) $ \_ ->
         fireSignal sig obj >> return v
+
 
 createStockPrice :: ObjRef StockModel ->
                     Date -> -- * date
@@ -294,23 +303,28 @@ createStockPrice sm d o h l c v a = do
 
             newObjectDC $ StockItem d o h l c (truncate v) a
 
+
 appendStock :: ObjRef StockModel -> ObjRef StockItem -> IO ()
 appendStock sm si = modifyMVar_ (stock $ fromObjRef sm) (\xs -> return $ xs ++ [si]) >>
                     fireSignal (Proxy :: Proxy StockReady) sm
+
 
 getStock :: ObjRef StockModel -> Int -> IO (ObjRef StockItem)
 getStock sm i = do
         st <- readMVar $ stock $ fromObjRef sm
         return $ st !! i
 
+
 clearStock :: ObjRef StockModel -> IO ()
 clearStock sm = modifyMVar_ (stock $ fromObjRef sm) (\_ -> return []) >>
                 fireSignal (Proxy :: Proxy StockReady) sm
+
 
 countStock :: ObjRef StockModel -> IO Int
 countStock sm = do
     ls <- readMVar $ stock $ fromObjRef sm
     return $ length ls
+
 
 stockPriceDeltaPercentage :: ObjRef StockModel -> IO Double
 stockPriceDeltaPercentage sm = do
@@ -318,9 +332,11 @@ stockPriceDeltaPercentage sm = do
         sp  <- readMVar $ stockPrice $ fromObjRef sm
         return $ abs $ spd / (sp - spd) * 100.0
 
+
 genStockList :: [(T.Text, T.Text)] -> [StockListItem]
 genStockList [] = []
 genStockList ((n,i):sts) = StockListItem n i : genStockList sts
+
 
 stocks :: [(T.Text, T.Text)]
 stocks = [
