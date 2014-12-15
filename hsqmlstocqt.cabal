@@ -1,5 +1,5 @@
 name:                hsqmlstocqt
-version:             0.1.0.0
+version:             0.1.0.1
 synopsis:            Stock Market Visualization in Haskell and Qt Quick
 copyright:           (c) 2014 Christopher Reichert
 license:             GPL-3
